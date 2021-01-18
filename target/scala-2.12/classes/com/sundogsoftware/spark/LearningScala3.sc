@@ -19,6 +19,10 @@ def transformInt(x: Int, f: Int => Int): Int = {
 val result = transformInt(2, cubeIt)
 println(result)
 
+val result2 = transformInt(5, squareIt)
+println(result2)
+
+// lambda function
 transformInt(3, x => x * x * x)
 
 transformInt(10, x => x / 2)
@@ -29,3 +33,12 @@ transformInt(2, x => {val y = x * 2; y * y})
 // Strings have a built-in .toUpperCase method. For example, "foo".toUpperCase gives you back FOO.
 // Write a function that converts a string to upper-case, and use that function of a few test strings.
 // Then, do the same thing using a function literal instead of a separate, named function.
+def upper(s: String): String = {
+  s.toUpperCase
+}
+upper("foo")
+
+def transformString(s: String, f: String => String): String = {
+  f(s)
+}
+transformString("foo", s => s.toUpperCase)
