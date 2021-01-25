@@ -31,14 +31,28 @@ object FriendsByAge {
     
     // Use our parseLines function to convert to (age, numFriends) tuples
     val rdd = lines.map(parseLine)
-    
+    println("--------------------------- rdd")
+    rdd.take(5).foreach(println)
+
+    println("--------------------------- rdd.map")
+    val ma = rdd.map(x => (x._1, (x._2, 1)))
+    ma.take(5).foreach(println)
+
     // Lots going on here...
     // We are starting with an RDD of form (age, numFriends) where age is the KEY and numFriends is the VALUE
     // We use mapValues to convert each numFriends value to a tuple of (numFriends, 1)
     // Then we use reduceByKey to sum up the total numFriends and total instances for each age, by
     // adding together all the numFriends values and 1's respectively.
-    val totalsByAge = rdd.mapValues(x => (x, 1)).reduceByKey( (x,y) => (x._1 + y._1, x._2 + y._2))
-    
+    println("--------------------------- rdd.mapValues")
+    val mv = rdd.mapValues(x => (x, 1))
+    mv.take(5).foreach(println)
+    println("--------------------------- rdd.mapValues 33")
+    mv.filter(x => x._1 == 33).collect().foreach(println)
+
+    println("--------------------------- totalsByAge")
+    val totalsByAge = mv.reduceByKey( (x,y) => (x._1 + y._1, x._2 + y._2))
+    totalsByAge.filter(x => x._1 == 33).collect().foreach(println)
+
     // So now we have tuples of (age, (totalFriends, totalInstances))
     // To compute the average we divide totalFriends / totalInstances for each age.
     val averagesByAge = totalsByAge.mapValues(x => x._1 / x._2)
@@ -47,6 +61,7 @@ object FriendsByAge {
     val results = averagesByAge.collect()
     
     // Sort and print the final results.
+    println("--------------------------- averagesByAge.sorted")
     results.sorted.foreach(println)
   }
     
