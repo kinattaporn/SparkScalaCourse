@@ -20,11 +20,14 @@ object WordCount {
     
     // Split into words separated by a space character
     val words = input.flatMap(x => x.split(" "))
+    println("------------------- words")
+    words.take(5).foreach(println)
     
     // Count up the occurrences of each word
     val wordCounts = words.countByValue()
     
     // Print the results.
+    println("------------------- wordCounts")
     wordCounts.foreach(println)
   }
   

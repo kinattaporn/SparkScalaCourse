@@ -19,7 +19,9 @@ object WordCountBetter {
     val input = sc.textFile("data/book.txt")
     
     // Split using a regular expression that extracts words
-    val words = input.flatMap(x => x.split("\\W+"))
+    val words = input.flatMap(x => x.split("\\W+")) // ONLY words NO punctuations ,-.!?
+    println("------------------- words")
+    words.take(5).foreach(println)
     
     // Normalize everything to lowercase
     val lowercaseWords = words.map(x => x.toLowerCase())
@@ -28,6 +30,7 @@ object WordCountBetter {
     val wordCounts = lowercaseWords.countByValue()
     
     // Print the results
+    println("------------------- wordCounts")
     wordCounts.foreach(println)
   }
   

@@ -20,23 +20,36 @@ object WordCountBetterSorted {
     
     // Split using a regular expression that extracts words
     val words = input.flatMap(x => x.split("\\W+"))
+    println("------------------- words")
+    words.take(5).foreach(println)
     
     // Normalize everything to lowercase
     val lowercaseWords = words.map(x => x.toLowerCase())
     
     // Count of the occurrences of each word
     val wordCounts = lowercaseWords.map(x => (x, 1)).reduceByKey( (x,y) => x + y )
+    println("------------------- wordCounts")
+    wordCounts.take(5).foreach(println)
     
     // Flip (word, count) tuples to (count, word) and then sort by key (the counts)
     val wordCountsSorted = wordCounts.map( x => (x._2, x._1) ).sortByKey()
+
+    // sort by value
+    val wordCountsSortedByValue = wordCounts.sortBy(_._2)
     
     // Print the results, flipping the (count, word) results to word: count as we go.
+    println("------------------- wordCountsSorted")
     for (result <- wordCountsSorted) {
       val count = result._1
       val word = result._2
       println(s"$word: $count")
     }
-    
+    println("------------------- wordCountsSortedByValue")
+    for (result <- wordCountsSortedByValue) {
+      val count = result._1
+      val word = result._2
+      println(s"$word: $count")
+    }
   }
   
 }
