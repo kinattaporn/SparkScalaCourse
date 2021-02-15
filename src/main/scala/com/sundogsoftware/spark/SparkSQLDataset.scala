@@ -5,7 +5,7 @@ import org.apache.log4j._
 
 object SparkSQLDataset {
 
-  case class Person(id:Int, name:String, age:Int, friends:Int)
+  case class Person(id:Int, name:String, age:Int, friends:Int) // define schema
 
   /** Our main function where the action happens */
   def main(args: Array[String]) {
@@ -25,8 +25,8 @@ object SparkSQLDataset {
     val schemaPeople = spark.read
       .option("header", "true")
       .option("inferSchema", "true")
-      .csv("data/fakefriends.csv")
-      .as[Person]
+      .csv("data/fakefriends.csv")      // DataFrame
+      .as[Person] // Person case class  // DataSet
 
     schemaPeople.printSchema()
     
