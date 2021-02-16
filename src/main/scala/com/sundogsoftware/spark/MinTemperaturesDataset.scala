@@ -23,7 +23,7 @@ object MinTemperaturesDataset {
       .master("local[*]")
       .getOrCreate()
 
-    val temperatureSchema = new StructType()
+    val temperatureSchema = new StructType() // at run time
       .add("stationID", StringType, nullable = true)
       .add("date", IntegerType, nullable = true)
       .add("measure_type", StringType, nullable = true)
@@ -34,7 +34,7 @@ object MinTemperaturesDataset {
     val ds = spark.read
       .schema(temperatureSchema)
       .csv("data/1800.csv")
-      .as[Temperature]
+      .as[Temperature] // at compile time - good to do this
     
     // Filter out all but TMIN entries
     val minTemps = ds.filter($"measure_type" === "TMIN")
@@ -44,11 +44,17 @@ object MinTemperaturesDataset {
     
     // Aggregate to find minimum temperature for every station
     val minTempsByStation = stationTemps.groupBy("stationID").min("temperature")
+    val maxTempsByStation = stationTemps.groupBy("stationID").max("temperature")
 
     // Convert temperature to fahrenheit and sort the dataset
     val minTempsByStationF = minTempsByStation
-      .withColumn("temperature", round($"min(temperature)" * 0.1f * (9.0f / 5.0f) + 32.0f, 2))
-      .select("stationID", "temperature").sort("temperature")
+      .withColumn("min_temperature", round($"min(temperature)" * 0.1f * (9.0f / 5.0f) + 32.0f, 2))
+      .select("stationID", "min_temperature").sort("min_temperature")
+    minTempsByStationF.show(5)
+    val maxTempsByStationF = maxTempsByStation
+      .withColumn("max_temperature", round($"max(temperature)" * 0.1f * (9.0f / 5.0f) + 32.0f, 2))
+      .select("stationID", "max_temperature").sort("max_temperature")
+    maxTempsByStationF.show(5)
 
     // Collect, format, and print the results
     val results = minTempsByStationF.collect()

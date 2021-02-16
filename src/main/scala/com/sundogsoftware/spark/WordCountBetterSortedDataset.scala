@@ -29,7 +29,7 @@ object WordCountBetterSortedDataset {
     // Split using a regular expression that extracts words
     val words = input
       .select(explode(split($"value", "\\W+")).alias("word"))
-      .filter($"word" =!= "")
+      .filter($"word" =!= "") // NOT equal to empty
 
     // Normalize everything to lowercase
     val lowercaseWords = words.select(lower($"word").alias("word"))
