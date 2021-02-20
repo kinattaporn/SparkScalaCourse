@@ -14,7 +14,7 @@ object PopularMoviesNicerDataset {
 
   /** Load up a Map of movie IDs to movie names. */
   def loadMovieNames() : Map[Int, String] = {
-
+    println("----------------------------- loadMovieNames")
     // Handle character encoding issues:
     implicit val codec: Codec = Codec("ISO-8859-1") // This is the current encoding of u.item, not UTF-8.
 
@@ -22,14 +22,19 @@ object PopularMoviesNicerDataset {
     var movieNames:Map[Int, String] = Map()
 
     val lines = Source.fromFile("data/ml-100k/u.item")
+    var count = 0
     for (line <- lines.getLines()) {
+      count += 1
       val fields = line.split('|')
       if (fields.length > 1) {
+        if (count <= 5) {
+          println("fields(0):" + fields(0) + " | fields(1):" + fields(1))
+        }
         movieNames += (fields(0).toInt -> fields(1))
       }
     }
     lines.close()
-
+    println("movieNames:" + movieNames)
     movieNames
   }
 
@@ -65,6 +70,8 @@ object PopularMoviesNicerDataset {
 
     // Get number of reviews per movieID
     val movieCounts = movies.groupBy("movieID").count()
+    println("----------------------------- movieCounts")
+    movieCounts.show(5)
 
     // Create a user-defined function to look up movie names from our
     // shared Map variable.
@@ -84,7 +91,8 @@ object PopularMoviesNicerDataset {
     val sortedMoviesWithNames = moviesWithNames.sort("count")
 
     // Show the results without truncating it
-    sortedMoviesWithNames.show(sortedMoviesWithNames.count.toInt, truncate = false)
+    println("----------------------------- sortedMoviesWithNames")
+    sortedMoviesWithNames.show(sortedMoviesWithNames.count.toInt, truncate = false) // "truncate = false" to see the whole movie name
   }
 }
 
