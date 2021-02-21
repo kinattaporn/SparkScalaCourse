@@ -45,15 +45,19 @@ object MostPopularSuperheroDataset {
       .withColumn("id", split(col("value"), " ")(0))
       .withColumn("connections", size(split(col("value"), " ")) - 1)
       .groupBy("id").agg(sum("connections").alias("connections"))
+    println("----------------------------- connections")
+    connections.show(5)
 
     val mostPopular = connections
         .sort($"connections".desc)
         .first()
+    println("mostPopular " + mostPopular)
 
     val mostPopularName = names
       .filter($"id" === mostPopular(0))
       .select("name")
       .first()
+    println("mostPopularName " + mostPopularName)
 
     println(s"${mostPopularName(0)} is the most popular superhero with ${mostPopular(1)} co-appearances.")
   }
