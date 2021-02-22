@@ -97,14 +97,20 @@ object MovieSimilaritiesDataset {
     // Self-join to find every combination.
     // Select movie pairs and rating pairs
     val moviePairs = ratings.as("ratings1")
-      .join(ratings.as("ratings2"), $"ratings1.userId" === $"ratings2.userId" && $"ratings1.movieId" < $"ratings2.movieId")
+      .join(ratings.as("ratings2"),
+        $"ratings1.userId" === $"ratings2.userId" &&  // movies that rated by the same userId
+          $"ratings1.movieId" < $"ratings2.movieId")  // prevent duplicate
       .select($"ratings1.movieId".alias("movie1"),
         $"ratings2.movieId".alias("movie2"),
         $"ratings1.rating".alias("rating1"),
         $"ratings2.rating".alias("rating2")
       ).as[MoviePairs]
+    println("--------------------- moviePairs")
+    moviePairs.show(5)
 
     val moviePairSimilarities = computeCosineSimilarity(spark, moviePairs).cache()
+    println("--------------------- moviePairSimilarities")
+    moviePairSimilarities.show(5)
 
     if (args.length > 0) {
       val scoreThreshold = 0.97
