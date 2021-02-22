@@ -48,7 +48,7 @@ object DegreesOfSeparation {
       color = "GRAY"
       distance = 0
     }
-    
+
     (heroID, (connections.toArray, distance, color))
   }
   
@@ -169,13 +169,18 @@ object DegreesOfSeparation {
     Logger.getLogger("org").setLevel(Level.ERROR)
     
      // Create a SparkContext using every core of the local machine
-    val sc = new SparkContext("local[*]", "DegreesOfSeparation") 
+    val sc = new SparkContext("local[*]", "DegreesOfSeparation")
     
     // Our accumulator, used to signal when we find the target 
     // character in our BFS traversal.
     hitCounter = Some(sc.longAccumulator("Hit Counter"))
     
     var iterationRdd = createStartingRdd(sc)
+    println("-------------------- iterationRddFilter")
+    val iterationRddFilter = iterationRdd
+      .filter(x => x._1 == 5306 || x._1 == 2399 || x._1 == 14)
+      .map(x => (x._1, x._2._2, x._2._3, x._2._1.mkString(" ")))
+    iterationRddFilter.collect().foreach(println)
 
     for (iteration <- 1 to 10) {
       println("Running BFS Iteration# " + iteration)
@@ -184,7 +189,13 @@ object DegreesOfSeparation {
       // reduce stage. If we encounter the node we're looking for as a GRAY
       // node, increment our accumulator to signal that we're done.
       val mapped = iterationRdd.flatMap(bfsMap)
-      
+      println("-------------------- mappedFilter")
+      val mappedFilter = mapped
+        .filter(x => x._1 == 5306 || x._1 == 2399 || x._1 == 14)
+        .map(x => (x._1, x._2._2, x._2._3, x._2._1.mkString(" ")))
+        .distinct()
+      mappedFilter.collect().foreach(println)
+
       // Note that mapped.count() action here forces the RDD to be evaluated, and
       // that's the only reason our accumulator is actually updated.  
       println("Processing " + mapped.count() + " values.")
