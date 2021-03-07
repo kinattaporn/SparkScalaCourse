@@ -29,8 +29,8 @@ object LinearRegressionDataFrameDataset {
     // the "labels" are the first column of our data, and "features" are the second column.
     // You can have more than one "feature" which is why a vector is required.
     val regressionSchema = new StructType()
-      .add("label", DoubleType, nullable = true)
-      .add("features_raw", DoubleType, nullable = true)
+      .add("label", DoubleType, nullable = true) // amount spent
+      .add("features_raw", DoubleType, nullable = true) // page speed
 
     import spark.implicits._
     val dsRaw = spark.read
@@ -39,12 +39,14 @@ object LinearRegressionDataFrameDataset {
       .csv("data/regression.txt")
       .as[RegressionSchema]
 
-    val assembler = new VectorAssembler().
+    val assembler = new VectorAssembler(). // Normalize
       setInputCols(Array("features_raw")).
       setOutputCol("features")
     val df = assembler.transform(dsRaw)
         .select("label","features")
-     
+    println("------------------------ df")
+    df.show(5)
+
     // Let's split our data into training data and testing data
     val trainTest = df.randomSplit(Array(0.5, 0.5))
     val trainingDF = trainTest(0)
