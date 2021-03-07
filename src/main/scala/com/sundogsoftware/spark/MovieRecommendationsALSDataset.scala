@@ -4,6 +4,7 @@ import org.apache.log4j._
 import org.apache.spark.ml.recommendation._
 import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, LongType, StringType, StructType}
+import org.apache.spark.sql.functions._
 
 import scala.collection.mutable
 
@@ -55,6 +56,8 @@ object MovieRecommendationsALSDataset {
       .schema(moviesNamesSchema)
       .csv("data/ml-100k/u.item")
       .as[MoviesNames]
+    println("--------------------- names")
+    names.show(5)
 
     val namesList = names.collect()
 
@@ -64,6 +67,8 @@ object MovieRecommendationsALSDataset {
       .schema(moviesSchema)
       .csv("data/ml-100k/u.data")
       .as[Rating]
+    println("--------------------- ratings")
+    ratings.show(5)
     
     // Build the recommendation model using Alternating Least Squares
     println("\nTraining recommendation model...")
@@ -76,7 +81,7 @@ object MovieRecommendationsALSDataset {
       .setRatingCol("rating")
     
     val model = als.fit(ratings)
-      
+
     // Get top-10 recommendations for the user we specified
     val userID:Int = args(0).toInt
     val users = Seq(userID).toDF("userID")
