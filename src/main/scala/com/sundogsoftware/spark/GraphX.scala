@@ -46,11 +46,23 @@ object GraphX {
     
      // Build up our vertices
     val names = sc.textFile("data/marvel-names.txt")
+    println("--------------------------- names")
+    names.collect.take(5).foreach(println)
+
     val verts = names.flatMap(parseNames)
+    println("--------------------------- verts")
+    verts.filter(x => x._1 == 859 || x._1 == 3855 || x._1 == 5306 || x._1 == 3460).collect.foreach(println)
     
     // Build up our edges
     val lines = sc.textFile("data/marvel-graph.txt")
-    val edges = lines.flatMap(makeEdges)    
+    println("--------------------------- lines")
+    lines.collect.take(5).foreach(println)
+
+    val edges = lines.flatMap(makeEdges)
+    println("--------------------------- edges 859")
+    edges.filter(x => x.srcId == 859).collect.foreach(println)
+    println("--------------------------- edges 5306")
+    edges.filter(x => x.srcId == 5306).collect.foreach(println)
     
     // Build up our graph, and cache it as we're going to do a bunch of stuff with it.
     val default = "Nobody"
